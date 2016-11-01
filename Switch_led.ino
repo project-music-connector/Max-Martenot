@@ -20,6 +20,9 @@ void setup()
   pinMode(Out3,OUTPUT);
   pinMode(Out4,OUTPUT);
   Serial.begin(9600);
+  
+//Define a list of 10 sensor values initialized to 0
+  int sensorValues[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
 
 void loop()
@@ -48,13 +51,23 @@ void loop()
   else
   {digitalWrite(Out4,LOW);}
   
-  // read the input on analog pin 0:
-  int sensorValue = analogRead(A0);
-  // print out the value you read:
+  // shift sensorValues 0-8 to the left
+  for (i = 0, i<9, i++){
+    sensorValues[i] = sensorValues[i+1];
+  }
+  // read the input on analog pin 0 and place at index 9 in sensorValues
+  sensorValues[9] = analogRead(A0);
+  // take the average of sensorValues
+  int sensorValue = 0;
+  for (i=0, i<10, i++) {
+    sensorValue += sensorValues[i];
+  }
+  sensorValue = sensorValue / 10;
+  // print out the averaged value you read:
   Serial.println(sensorValue, DEC);
   Serial.print(",");
   
-  //Print inputs to console
+  // Print inputs to console
   Serial.print(digitalRead(In1), DEC );
   Serial.print(",");
   Serial.println();
