@@ -51,16 +51,19 @@ void loop()
   // read the input on analog pin 0:
   int sensorValue = analogRead(A0);
   // print out the value you read:
-  Serial.print(sensorValue, DEC);
+  Serial.println(sensorValue, DEC);
   Serial.print(",");
   
   //Print inputs to console
   Serial.print(digitalRead(In1), DEC );
   Serial.print(",");
+  Serial.println();
   Serial.print(digitalRead(In2), DEC );
   Serial.print(",");
+  Serial.println();
   Serial.print(digitalRead(In3), DEC );
   Serial.print(",");
+  Serial.println();
   Serial.print(digitalRead(In4), DEC );
   Serial.print(",");
   Serial.println();
