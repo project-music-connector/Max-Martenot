@@ -22,7 +22,7 @@ SqrOsc sqrL;
 Reverb reverb;
 
 //Array for holding serial input in integers
-int[] serialInputInt;
+int[] serialInputInt = new int[numberOfSwitches + 2];
 
 //Array for holding switch values
 int numberOfSwitches = 6;
@@ -85,6 +85,9 @@ void draw() {
     print("\n");
 
     //convert the string inputs that are stored in the serialInputInt array, which will then be further decomposed
+    /*for (int x = 0; x < numberOfSwitches + 2; x++) {
+      serialInputInt[x] = int(serialInput[x]);
+    }*/
     serialInputInt = int(serialInput);
     potPitch = serialInputInt[0];
     potReverb = serialInputInt[1];
