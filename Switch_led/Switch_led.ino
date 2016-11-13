@@ -12,6 +12,9 @@
 #define Out5 6
 #define Out6 7
 
+//Define a list of 10 sensor values initialized to 0
+int sensorValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  
 void setup() {
 //Initializes pins 1-4 as inputs and 5-8 as outputs
   pinMode(In1, INPUT_PULLUP);
@@ -25,9 +28,6 @@ void setup() {
   pinMode(Out3, OUTPUT);
   pinMode(Out4, OUTPUT);
   Serial.begin(9600);
-
-  //Define a list of 10 sensor values initialized to 0
-  int sensorValues[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
 
 void loop() {
@@ -68,7 +68,7 @@ void loop() {
   {digitalWrite(Out6,LOW);}
 
   // shift sensorValues 0-8 to the left
-  for (i=0; i<9; i++){
+  for (int i=0; i<9; i++){
     sensorValues[i] = sensorValues[i+1];
   }
   
@@ -77,7 +77,7 @@ void loop() {
   
   // take the average of sensorValues
   int sensorValue = 0;
-  for (i=0; i<10; i++) {
+  for (int i=0; i<10; i++) {
     sensorValue += sensorValues[i];
   }
   sensorValue = sensorValue / 10;
