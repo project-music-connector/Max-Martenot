@@ -5,11 +5,11 @@
 #define In4 11
 #define In5 12
 #define In6 13
-#define Out1 3
-#define Out2 4
-#define Out3 5
-#define Out4 6
-#define Out5 8
+#define Out1 2
+#define Out2 3
+#define Out3 4
+#define Out4 5
+#define Out5 6
 #define Out6 7
 
 void setup() {
