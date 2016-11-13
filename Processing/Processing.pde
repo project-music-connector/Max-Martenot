@@ -9,6 +9,9 @@ String serial;   // declare a new string called 'serial'
 Serial port;     // The serial port, this is a new instance of the Serial class (an Object)
 int[] serialInputInt; // Array of integers to contain serial input
 
+Reverb reverb;
+float reverbValue;
+
 //declare instances of sound oscillations
 SinOsc sinOsc;
 SinOsc sinOscH;
@@ -52,6 +55,8 @@ void setup() {
   sinOscH = new SinOsc(this);
   sinOscL = new SinOsc(this);
   triOsc = new TriOsc(this);
+  
+  reverb = new Reverb(this);
  
 } //end setup
 
@@ -130,17 +135,19 @@ void draw() {
     //set oscillation frequencies
     if (sinOscOn == 1) {
       sinOsc.freq(potFreq);
+      reverb.process(sinOsc, reverbValue);
     }
     if (sinOscHOn == 1) {
       sinOscH.freq(potFreq);
+      reverb.process(sinOscH, reverbValue);
     }
     if (sinOscLOn == 1) {
-      sinOscL.play();
       sinOscL.freq(potFreq);
+      reverb.process(sinOscL, reverbValue);
     }
     if (triOscOn == 1) {
-      triOsc.play();
       triOsc.freq(potFreq);
+      reverb.process(triOsc, reverbValue);
     }
     
   } //stop reading serial
