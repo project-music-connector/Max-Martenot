@@ -1,34 +1,34 @@
 //Max Martenot
 //October 28th, 2016
 
-import processing.sound.*;
-import processing.serial.*; //import the Serial library so can read from arudino input via serial communication
+//Data input: pitchPot, reverbPot, switches;
+
+import processing.sound.*;  //import the Sound library for oscillations and reverb
+import processing.serial.*; //import the Serial library so we can read from arudino input via serial communication
 
 int end = 10;    // the number 10 is ASCII for linefeed (end of serial.println), later we will look for this to break up individual messages
 String serial;   // declare a new string called 'serial' 
 Serial port;     // The serial port, this is a new instance of the Serial class (an Object)
 int[] serialInputInt; // Array of integers to contain serial input
 
-Reverb reverb;
-float reverbValue;
+int numberOfSwitches = 6;
 
-//declare instances of sound oscillations
+//declare instances of sound objects
 SinOsc sinOsc;
 SinOsc sinOscH;
 SinOsc sinOscL;
 TriOsc triOsc;
+SawOsc sawOsc;
+SqrOsc sqrOsc;
+Reverb reverb;
 
-//declare on/off variables for sound oscillations -- corresponds to Arduino switch input
-int sinOscOn;
-int sinOscHOn;
-int sinOscLOn;
-int triOscOn;
+int[] switches = new int[6];
+int[] switchesOld = new int[6];
 
-//declare on/off variables for sound oscillations from previous cycle
-int sinOscOnOld;
-int sinOscHOnOld;
-int sinOscLOnOld;
-int triOscOnOld;
+int pitchPot;
+int reverbPot;
+float pitchFreq;
+float reverbValue;
 
 void setup() {
   //serial reading code
@@ -42,20 +42,17 @@ void setup() {
   delay(50);
   serial = port.readStringUntil(10);
   if (serial != null) { 
-    String[] serialInput = split(serial, ','); 
-    for (String s : serialInput) {
-       print(s + ", ");
-    }
-    print("\n");
+    String[] serialInput = split(serial, ',');
     serialInputInt = int(serialInput);
   }
   
-  //initialize instances of sound oscillations
+  //initialize instances of sound objects
   sinOsc = new SinOsc(this);
   sinOscH = new SinOsc(this);
   sinOscL = new SinOsc(this);
   triOsc = new TriOsc(this);
-  
+  sawOsc = new SawOsc(this);
+  sqrOsc = new SqrOsc(this);
   reverb = new Reverb(this);
  
 } //end setup
@@ -73,81 +70,93 @@ void draw() {
     //and then saved in separate cells of the array so we can access each 
     String[] serialInput = split(serial, ','); 
     //can help to print these to console at this point to check it's working
-    for (String s : serialInput) {
+    /*for (String s : serialInput) {
       print(s + ", ");
     }
-    print("\n");
+    print("\n");*/
 
     //convert the string inputs that are stored in the serialInputInt array, which will then be further decomposed
     serialInputInt = int(serialInput);
-    sinOscOnOld = sinOscOn;
-    sinOscHOnOld = sinOscHOn;
-    sinOscLOnOld = sinOscLOn;
-    triOscOnOld = triOscOn;
+    
+    //copy switches to switchesOld
+    arrayCopy(switches, switchesOld);
     
     //parse values
-    int potValue = serialInputInt[0];
-    sinOscOn = serialInputInt[1];
-    sinOscHOn = serialInputInt[2];
-    sinOscLOn = serialInputInt[3];
-    triOscOn = serialInputInt[4];
+    pitchPot = serialInputInt[0];
+    reverbPot = serialInputInt[1];
+    arrayCopy(serialInputInt, 2, switches, 0, 6);
     
     //convert linear pot input from MIDI to frequencies
-    float potFreq = pow(2, (potValue/10.0 - 69) / 12) * 440;
+    pitchFreq = pow(2, (pitchPot/10.0 - 69) / 12) * 440;
+    //convert reverb pot input into 0 to 1 value
+    reverbValue = map(reverbPot, 0, 1023, 0.0, 1.0);
     
     //debugging
-    println(potValue);
-    println(potFreq);
-    println(sinOscOn);
-    println(sinOscHOn);
-    println(sinOscLOn);
-    println(triOscOn);
+    println(pitchPot + " " + pitchFreq);
+    printArray(switches);
     
     //activate/stop oscillations if state has changed
-    if (sinOscOn - 1 == sinOscOnOld) {
+    if (switches[0] - 1 == switchesOld[0]) {
       sinOsc.play();
     }
-    if (sinOscOnOld - 1 == sinOscOn) {
+    if (switches[0] == switches[0] - 1) {
       sinOsc.stop();
     }
-    
-    if (sinOscHOn - 1 == sinOscHOnOld) {
+    if (switches[1] - 1 == switchesOld[1]) {
       sinOscH.play();
     }
-    if (sinOscHOnOld - 1 == sinOscHOn) {
+    if (switches[1] == switches[1] - 1) {
       sinOscH.stop();
     }
-    
-    if (sinOscLOn - 1 == sinOscLOnOld) {
+    if (switches[2] - 1 == switchesOld[2]) {
       sinOscL.play();
     }
-    if (sinOscLOnOld - 1 == sinOscLOn) {
+    if (switches[2] == switches[2] - 1) {
       sinOscL.stop();
     }
-    
-    if (triOscOn - 1 == triOscOnOld) {
+    if (switches[3] - 1 == switches[3]) {
       triOsc.play();
     }
-    if (triOscOnOld - 1 == triOscOn) {
+    if (switches[3] == switches[3] - 1) {
       triOsc.stop();
+    }
+    if (switches[4] - 1 == switches[4]) {
+      sawOsc.play();
+    }
+    if (switches[4] == switches[4] - 1) {
+      sawOsc.stop();
+    }
+    if (switches[5] - 1 == switches[5]) {
+      sqrOsc.play();
+    }
+    if (switches[5] == switches[5] - 1) {
+      sqrOsc.stop();
     }
     
     //set oscillation frequencies
-    if (sinOscOn == 1) {
-      sinOsc.freq(potFreq);
+    if (switches[0] == 1) {
+      sinOsc.freq(pitchFreq);
       reverb.process(sinOsc, reverbValue);
     }
-    if (sinOscHOn == 1) {
-      sinOscH.freq(potFreq);
+    if (switches[1] == 1) {
+      sinOscH.freq(pitchFreq);
       reverb.process(sinOscH, reverbValue);
     }
-    if (sinOscLOn == 1) {
-      sinOscL.freq(potFreq);
+    if (switches[2] == 1) {
+      sinOscL.freq(pitchFreq);
       reverb.process(sinOscL, reverbValue);
     }
-    if (triOscOn == 1) {
-      triOsc.freq(potFreq);
+    if (switches[3] == 1) {
+      triOsc.freq(pitchFreq);
       reverb.process(triOsc, reverbValue);
+    }
+    if (switches[4] == 1) {
+      sawOsc.freq(pitchFreq);
+      reverb.process(sawOsc, reverbValue);
+    }
+    if (switches[5] == 1) {
+      sqrOsc.freq(pitchFreq);
+      reverb.process(sqrOsc, reverbValue);
     }
     
   } //stop reading serial
