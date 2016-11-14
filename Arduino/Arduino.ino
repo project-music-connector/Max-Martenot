@@ -21,7 +21,7 @@ const int button1 = 0;
 const int button2 = 1;
 
 const int pitchPot = A0;
-const int delayPot = A1;
+const int reverbPot = A1;
 const int pinPhoto = A3;
 
 // set photoresistor range variables
@@ -130,7 +130,7 @@ void loop() {
   // print inputs to console
   Serial.print(pitchValue, DEC);
   Serial.print(",");
-  Serial.print(analogRead(delayPot), DEC);
+  Serial.print(analogRead(reverbPot), DEC);
   Serial.print(",");
   Serial.print(digitalRead(switch1), DEC);
   Serial.print(",");
