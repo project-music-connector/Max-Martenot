@@ -22,7 +22,7 @@ const int button2 = 1;
 
 const int pitchPot = A0;
 const int reverbPot = A1;
-const int pinPhoto = A3;
+const int pinPhoto = A2;
 
 // set photoresistor range variables
 float maxrange = 0;
@@ -69,7 +69,9 @@ void loop() {
   if (photoReading <= minrange) {
     photoReading = int(minrange);
   }
-  photoValue = round((photoReading - minrange) / (maxrange - minrange) * 100);
+  //calculate photoresistor value
+  //photoValue = round((photoReading - minrange) / (maxrange - minrange) * 100);
+  photoValue = round(map(photoReading, minrange, maxrange, 0, 1023));
   
   // drive LEDs using switch values
   // switch1 drives led1
@@ -131,6 +133,8 @@ void loop() {
   Serial.print(pitchValue, DEC);
   Serial.print(",");
   Serial.print(analogRead(reverbPot), DEC);
+  Serial.print(",");
+  Serial.print(photoValue, DEC);
   Serial.print(",");
   Serial.print(digitalRead(switch1), DEC);
   Serial.print(",");
