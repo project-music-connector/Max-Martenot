@@ -1,7 +1,7 @@
 //Max Martenot
 //October 28th, 2016
 
-//Data input: pitchPot, reverbPot, switches;
+//Data input: pitchPot(0-1023), reverbPot(0-1023), photoSensor(0-1023), switches(0-1);
 
 import processing.sound.*;  //import the Sound library for oscillations and reverb
 import processing.serial.*; //import the Serial library so we can read from arudino input via serial communication
@@ -26,9 +26,11 @@ int[] switches = new int[6];
 int[] switchesOld = new int[6];
 
 int pitchPot;
-int reverbPot;
 float pitchFreq;
+int reverbPot;
 float reverbValue;
+int photoSensor;
+float ampValue;
 
 void setup() {
   //serial reading code
@@ -84,15 +86,18 @@ void draw() {
     //parse values
     pitchPot = serialInputInt[0];
     reverbPot = serialInputInt[1];
-    arrayCopy(serialInputInt, 2, switches, 0, 6);
+    photoSensor = serialInputInt[2];
+    arrayCopy(serialInputInt, 3, switches, 0, numberOfSwitches);
     
     //convert linear pot input from MIDI to frequencies
     pitchFreq = pow(2, (pitchPot/10.0 - 69) / 12) * 440;
     //convert reverb pot input into 0 to 1 value
     reverbValue = map(reverbPot, 0, 1023, 0.0, 1.0);
+    //conver photoSensor input into 0 to 1 value
+    ampValue = map(photoSensor, 0, 1023, 0.0, 1.0);
     
     //debugging
-    println(pitchPot + " " + pitchFreq);
+    println(pitchPot + " " + pitchFreq + " " + ampValue);
     printArray(switches);
     
     //activate/stop oscillations if state has changed
@@ -136,26 +141,32 @@ void draw() {
     //set oscillation frequencies
     if (switches[0] == 1) {
       sinOsc.freq(pitchFreq);
+      sinOsc.amp(ampValue);
       reverb.process(sinOsc, reverbValue);
     }
     if (switches[1] == 1) {
       sinOscH.freq(pitchFreq);
+      sinOscH.amp(ampValue);
       reverb.process(sinOscH, reverbValue);
     }
     if (switches[2] == 1) {
       sinOscL.freq(pitchFreq);
+      sinOscL.amp(ampValue);
       reverb.process(sinOscL, reverbValue);
     }
     if (switches[3] == 1) {
       triOsc.freq(pitchFreq);
+      triOsc.amp(ampValue);
       reverb.process(triOsc, reverbValue);
     }
     if (switches[4] == 1) {
       sawOsc.freq(pitchFreq);
+      sawOsc.amp(ampValue);
       reverb.process(sawOsc, reverbValue);
     }
     if (switches[5] == 1) {
       sqrOsc.freq(pitchFreq);
+      sqrOsc.amp(ampValue);
       reverb.process(sqrOsc, reverbValue);
     }
     
