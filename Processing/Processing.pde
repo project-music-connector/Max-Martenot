@@ -20,7 +20,12 @@ SinOsc sinOscL;
 TriOsc triOsc;
 SawOsc sawOsc;
 SqrOsc sqrOsc;
-Reverb reverb;
+Reverb reverbSin;
+Reverb reverbSinH;
+Reverb reverbSinL;
+Reverb reverbTri;
+Reverb reverbSaw;
+Reverb reverbSqr;
 
 int[] switches = new int[6];
 int[] switchesOld = new int[6];
@@ -31,6 +36,7 @@ int reverbPot;
 float reverbValue;
 int photoSensor;
 float ampValue;
+int i = 0;
 
 void setup() {
   //serial reading code
@@ -55,8 +61,20 @@ void setup() {
   triOsc = new TriOsc(this);
   sawOsc = new SawOsc(this);
   sqrOsc = new SqrOsc(this);
-  reverb = new Reverb(this);
- 
+  reverbSin = new Reverb(this);
+  reverbSinH = new Reverb(this);
+  reverbSinL = new Reverb(this);
+  reverbTri = new Reverb(this);
+  reverbSaw = new Reverb(this);
+  reverbSqr = new Reverb(this);
+  
+  reverbSin.process(sinOsc);
+  reverbSinH.process(sinOscH);
+  reverbSinL.process(sinOscL);
+  reverbTri.process(triOsc);
+  reverbSaw.process(sawOsc);
+  reverbSqr.process(sqrOsc);
+  
 } //end setup
 
 void draw() {
@@ -65,7 +83,7 @@ void draw() {
   while (port.available() > 0) { 
     serial = port.readStringUntil(end);
   } //end while
-
+  i++;
   //if the string is not empty, do this
   if (serial != null) { 
     //sensor input from Arduino, each value is separated and split depending on the ','
@@ -97,78 +115,79 @@ void draw() {
     ampValue = map(photoSensor, 0, 1023, 0.0, 1.0);
     
     //debugging
-    println(pitchPot + " " + pitchFreq + " " + ampValue);
+    println(pitchFreq + " " + reverbValue + " " + ampValue);
     printArray(switches);
     
     //activate/stop oscillations if state has changed
     if (switches[0] - 1 == switchesOld[0]) {
       sinOsc.play();
     }
-    if (switches[0] == switches[0] - 1) {
+    if (switches[0] == switchesOld[0] - 1) {
       sinOsc.stop();
     }
     if (switches[1] - 1 == switchesOld[1]) {
       sinOscH.play();
     }
-    if (switches[1] == switches[1] - 1) {
+    if (switches[1] == switchesOld[1] - 1) {
       sinOscH.stop();
     }
     if (switches[2] - 1 == switchesOld[2]) {
       sinOscL.play();
     }
-    if (switches[2] == switches[2] - 1) {
+    if (switches[2] == switchesOld[2] - 1) {
       sinOscL.stop();
     }
-    if (switches[3] - 1 == switches[3]) {
+    if (switches[3] - 1 == switchesOld[3]) {
       triOsc.play();
     }
-    if (switches[3] == switches[3] - 1) {
+    if (switches[3] == switchesOld[3] - 1) {
       triOsc.stop();
     }
-    if (switches[4] - 1 == switches[4]) {
+    if (switches[4] - 1 == switchesOld[4]) {
       sawOsc.play();
     }
-    if (switches[4] == switches[4] - 1) {
+    if (switches[4] == switchesOld[4] - 1) {
       sawOsc.stop();
     }
-    if (switches[5] - 1 == switches[5]) {
+    if (switches[5] - 1 == switchesOld[5]) {
       sqrOsc.play();
     }
-    if (switches[5] == switches[5] - 1) {
+    if (switches[5] == switchesOld[5] - 1) {
       sqrOsc.stop();
     }
-    
     //set oscillation frequencies
     if (switches[0] == 1) {
       sinOsc.freq(pitchFreq);
       sinOsc.amp(ampValue);
-      reverb.process(sinOsc, reverbValue);
+      reverbSin.room(reverbValue);
     }
     if (switches[1] == 1) {
       sinOscH.freq(pitchFreq);
       sinOscH.amp(ampValue);
-      reverb.process(sinOscH, reverbValue);
+      reverbSinH.room(reverbValue);
     }
     if (switches[2] == 1) {
       sinOscL.freq(pitchFreq);
       sinOscL.amp(ampValue);
-      reverb.process(sinOscL, reverbValue);
+      reverbSinL.room(reverbValue);
     }
     if (switches[3] == 1) {
-      triOsc.freq(pitchFreq);
       triOsc.amp(ampValue);
-      reverb.process(triOsc, reverbValue);
+      triOsc.freq(pitchFreq);
+      reverbTri.room(reverbValue);
     }
     if (switches[4] == 1) {
       sawOsc.freq(pitchFreq);
       sawOsc.amp(ampValue);
-      reverb.process(sawOsc, reverbValue);
+      reverbSaw.room(reverbValue);
     }
     if (switches[5] == 1) {
       sqrOsc.freq(pitchFreq);
       sqrOsc.amp(ampValue);
-      reverb.process(sqrOsc, reverbValue);
+      reverbSqr.room(reverbValue);
     }
     
   } //stop reading serial
+  println(i);
+  delay(20);
 } //end draw
