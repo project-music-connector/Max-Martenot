@@ -20,6 +20,7 @@ SinOsc sinOscL;
 TriOsc triOsc;
 SawOsc sawOsc;
 SqrOsc sqrOsc;
+
 Reverb reverbSin;
 Reverb reverbSinH;
 Reverb reverbSinL;
@@ -61,19 +62,13 @@ void setup() {
   triOsc = new TriOsc(this);
   sawOsc = new SawOsc(this);
   sqrOsc = new SqrOsc(this);
+  
   reverbSin = new Reverb(this);
   reverbSinH = new Reverb(this);
   reverbSinL = new Reverb(this);
   reverbTri = new Reverb(this);
   reverbSaw = new Reverb(this);
   reverbSqr = new Reverb(this);
-  
-  reverbSin.process(sinOsc);
-  reverbSinH.process(sinOscH);
-  reverbSinL.process(sinOscL);
-  reverbTri.process(triOsc);
-  reverbSaw.process(sawOsc);
-  reverbSqr.process(sqrOsc);
   
 } //end setup
 
@@ -121,70 +116,88 @@ void draw() {
     //activate/stop oscillations if state has changed
     if (switches[0] - 1 == switchesOld[0]) {
       sinOsc.play();
+      reverbSin.process(sinOsc);
     }
     if (switches[0] == switchesOld[0] - 1) {
       sinOsc.stop();
+      reverbSin.stop();
     }
     if (switches[1] - 1 == switchesOld[1]) {
       sinOscH.play();
+      reverbSinH.process(sinOsc)H;
     }
     if (switches[1] == switchesOld[1] - 1) {
       sinOscH.stop();
+      reverbSinH.stop();
     }
     if (switches[2] - 1 == switchesOld[2]) {
       sinOscL.play();
+      reverbSinL.process(sinOscL);
     }
     if (switches[2] == switchesOld[2] - 1) {
       sinOscL.stop();
+      reverbSinL.stop();
     }
     if (switches[3] - 1 == switchesOld[3]) {
       triOsc.play();
+      reverbTri.process(triOsc);
     }
     if (switches[3] == switchesOld[3] - 1) {
       triOsc.stop();
+      reverbTri.stop();
     }
     if (switches[4] - 1 == switchesOld[4]) {
       sawOsc.play();
+      reverbSaw.process(sawOsc);
     }
     if (switches[4] == switchesOld[4] - 1) {
       sawOsc.stop();
+      reverbSaw.stop();
     }
     if (switches[5] - 1 == switchesOld[5]) {
       sqrOsc.play();
+      reverbSqr.process(sqrOsc);
     }
     if (switches[5] == switchesOld[5] - 1) {
       sqrOsc.stop();
+      reverbSqr.stop();
     }
     //set oscillation frequencies
     if (switches[0] == 1) {
       sinOsc.freq(pitchFreq);
       sinOsc.amp(ampValue);
       reverbSin.room(reverbValue);
+      reverbSin.damp(reverbValue);
     }
     if (switches[1] == 1) {
       sinOscH.freq(pitchFreq);
       sinOscH.amp(ampValue);
       reverbSinH.room(reverbValue);
+      reverbSinH.damp(reverbValue);
     }
     if (switches[2] == 1) {
       sinOscL.freq(pitchFreq);
       sinOscL.amp(ampValue);
       reverbSinL.room(reverbValue);
+      reverbSinL.damp(reverbValue);
     }
     if (switches[3] == 1) {
       triOsc.amp(ampValue);
       triOsc.freq(pitchFreq);
       reverbTri.room(reverbValue);
+      reverbTri.damp(reverbValue);
     }
     if (switches[4] == 1) {
       sawOsc.freq(pitchFreq);
       sawOsc.amp(ampValue);
       reverbSaw.room(reverbValue);
+      reverbSaw.damp(reverbValue);
     }
     if (switches[5] == 1) {
       sqrOsc.freq(pitchFreq);
       sqrOsc.amp(ampValue);
       reverbSqr.room(reverbValue);
+      reverbSqr.damp(reverbValue);
     }
     
   } //stop reading serial
