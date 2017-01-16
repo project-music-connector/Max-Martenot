@@ -124,7 +124,7 @@ void draw() {
     }
     if (switches[1] - 1 == switchesOld[1]) {
       sinOscH.play();
-      reverbSinH.process(sinOsc)H;
+      reverbSinH.process(sinOscH);
     }
     if (switches[1] == switchesOld[1] - 1) {
       sinOscH.stop();
