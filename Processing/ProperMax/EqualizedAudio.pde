@@ -1,6 +1,6 @@
-public class EqualizedAudio implements Constants{
+public class EqualizedAudio implements Constants, AudioEffect {
   private float phon;
-  private float vAF;
+  private float vAf;
   private float spl;
   
   public EqualizedAudio() {
@@ -17,12 +17,19 @@ public class EqualizedAudio implements Constants{
   }
   
   public float getVaf() {
-    return vAF;
+    return vAf;
   }
   public float getSpl() {
     return spl;
   }
   
+  public float pitchMod(float pitch) {
+    return pitch; // H(w) = 1
+  }
+  public float ampMod(float ampValue) {
+    // TODO: implement amplitude modulation.
+    return 0.0;
+  }
 }
 public static int getClosestVal(float[] toSearch, float toFind) { // Binary Search Static Method
   int low = 0;

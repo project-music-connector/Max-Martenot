@@ -1,3 +1,5 @@
+import processing.serial.*;
+
 public class SerialInput implements java.util.Iterator, Constants{
   private Serial port;
   
