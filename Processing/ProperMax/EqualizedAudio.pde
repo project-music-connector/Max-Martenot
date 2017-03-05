@@ -23,12 +23,8 @@ public class EqualizedAudio implements Constants, AudioEffect {
     return spl;
   }
   
-  public float pitchMod(float pitch) {
-    return pitch; // H(w) = 1
-  }
-  public float ampMod(float ampValue) {
-    // TODO: implement amplitude modulation.
-    return 0.0;
+  public void addEffect(InstrumentData d) {
+    // TODO: Implement transfer function
   }
 }
 public static int getClosestVal(float[] toSearch, float toFind) { // Binary Search Static Method
