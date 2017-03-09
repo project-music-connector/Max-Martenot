@@ -19,6 +19,16 @@ public class SwitchArray implements Constants {
   public int[] getState(int state) {
     int[] on = new int[SWITCHES];
     int nOn = 0;
+    if (DEBUG) {
+      System.out.println(System.currentTimeMillis() + ", Attempting to get switch states.");
+      System.out.println("Search for state: " + str(state));
+      //System.out.println("Old State: " + str(oldState));
+      //System.out.println("Current State: " + str(currentState));
+      println("Old State:");
+      printArray(oldState);
+      println("Current State: ");
+      printArray(currentState);
+    }
     for (int i = 0; i < SWITCHES; i++) {
       if (currentState[i] == state) {
         on[nOn] = i;
@@ -27,6 +37,11 @@ public class SwitchArray implements Constants {
     int[] returnObject = new int[nOn];
     for (int i = 0; i < nOn; i++) {
       returnObject[i] = new Integer(on[i]);
+    }
+    if (DEBUG) {
+      System.out.println(System.currentTimeMillis() + ", Switch states achieved");
+      //System.out.println(arrayToString(returnObject));
+      printArray(returnObject);
     }
     return returnObject;
   }

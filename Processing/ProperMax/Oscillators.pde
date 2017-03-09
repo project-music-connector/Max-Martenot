@@ -25,6 +25,15 @@ public class Oscillators implements Constants{
     int[] toOff = d.switches.getFlippedState(0);
     int[] on = d.switches.getState(1);
     
+    if (DEBUG) {
+      
+      //System.out.println(arrayToString(toOn));
+      //System.out.println(arrayToString(toOff));
+      printArray(toOn);
+      printArray(toOff);
+      System.out.println(str(on));
+    }
+    
     // Iterate through the lists
     for (int i = 0; i < toOn.length; i++) {
       switch (toOn[i]) {

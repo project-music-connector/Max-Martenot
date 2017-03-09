@@ -19,4 +19,6 @@ public interface Constants {
   public static final int ENDL = 10;
   public static final int SWITCHES = 6;
   public static final int EFFECTS = 2;
+  
+  public static final float defaultBasePitch = 130.81;
 }

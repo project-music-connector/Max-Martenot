@@ -7,6 +7,9 @@ public class EqualizedAudio implements Constants, AudioEffect {
   }
   
   public void setCoefficients(InstrumentData d) {
+    if (DEBUG) {
+      System.out.println(System.currentTimeMillis() + ", Setting Equalization Coefficients");
+    }
     int ndx = getClosestVal(f,d.pitch);
     phon = 20 * log(d.amplitude);
     float tmp1 = pow(10,(0.025*phon)) - 1.15;
@@ -14,6 +17,14 @@ public class EqualizedAudio implements Constants, AudioEffect {
     float tmp2 = pow(0.4 * tmp15/10 - 9, af[ndx]);
     vAf = 0.00447 * tmp1 + tmp2;
     spl = ((10/af[ndx]) * (log(vAf)/log(vAf))) - lu[ndx] + 94;
+    
+    if (DEBUG) {
+      System.out.println(System.currentTimeMillis() + ", Coefficients set");
+      System.out.println("ndx: " + ndx);
+      System.out.println("phon: " + phon);
+      System.out.println("vAF: " + vAf);
+      System.out.println("spl: " + spl);
+    }
   }
   
   public float getVaf() {
