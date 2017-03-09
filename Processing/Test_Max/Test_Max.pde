@@ -27,7 +27,7 @@ Reverb reverbSinL;
 Reverb reverbTri;
 Reverb reverbSaw;
 Reverb reverbSqr;
-Amplitude ampl;
+Equalizer ampl;
 
 int[] switches = new int[6];
 int[] switchesOld = new int[6];
@@ -105,16 +105,18 @@ void draw() {
     
     //convert linear pot input from MIDI to frequencies
     pitchFreq = pitchPot / 1023.0  * 128;
+    pitchFreq = map(pitchFreq, 0, 128, 48, 84);
     println(pitchFreq);
     pitchFreq = pow(2, (pitchFreq - 69) / 12) * 440;
-    pitchFreq = pitchFreq + 220;
     //convert reverb pot input into 0 to 1 value
     reverbValue = map(reverbPot, 0, 1023, 0.0, 1.0);
     //conver photoSensor input into 0 to 1 value
     ampValue = map(photoSensor, 0, 1023, 0.0, 1.0);
-    ampValue = 1.0;
-    ampl = new Amplitude(ampValue, pitchFreq);
-    ampValue = ampl.getAmplitude();
+    ampl = new Equalizer();
+    ampValue = ampl.getAmplitude(ampValue, pitchFreq) * 16;
+    if (ampValue > 1) {
+      ampValue = 1;
+    }
     
     
     //debugging
