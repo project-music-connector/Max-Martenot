@@ -37,6 +37,7 @@ float pitchFreq;
 int reverbPot;
 float reverbValue;
 int photoSensor;
+float ampSensor;
 float ampValue;
 int i = 0;
 
@@ -85,6 +86,7 @@ void draw() {
     //sensor input from Arduino, each value is separated and split depending on the ','
     //and then saved in separate cells of the array so we can access each 
     String[] serialInput = split(serial, ','); 
+    printArray(serialInput);
     //can help to print these to console at this point to check it's working
     /*for (String s : serialInput) {
       print(s + ", ");
@@ -101,7 +103,7 @@ void draw() {
     pitchPot = serialInputInt[0];
     reverbPot = serialInputInt[1];
     photoSensor = serialInputInt[2];
-    arrayCopy(serialInputInt, 3, switches, 0, numberOfSwitches);
+    arrayCopy(serialInputInt, 3, switches, 0, 6);
     
     //convert linear pot input from MIDI to frequencies
     pitchFreq = pitchPot / 1023.0  * 128;
@@ -111,9 +113,11 @@ void draw() {
     //convert reverb pot input into 0 to 1 value
     reverbValue = map(reverbPot, 0, 1023, 0.0, 1.0);
     //conver photoSensor input into 0 to 1 value
-    ampValue = map(photoSensor, 0, 1023, 0.0, 1.0);
+    println("photoresistor value", photoSensor);
+    ampSensor = map(photoSensor, 0, 1023, 0.0, 1.0);
+    ampSensor = pow(ampSensor, 10);
     ampl = new Equalizer();
-    ampValue = ampl.getAmplitude(ampValue, pitchFreq) * 16;
+    ampValue = ampl.getAmplitude(ampSensor, pitchFreq);
     if (ampValue > 1) {
       ampValue = 1;
     }
@@ -180,13 +184,13 @@ void draw() {
       reverbSin.damp(reverbValue);
     }
     if (switches[1] == 1) {
-      sinOscH.freq(pitchFreq);
+      sinOscH.freq(pitchFreq * 2);
       sinOscH.amp(ampValue);
       reverbSinH.room(reverbValue);
       reverbSinH.damp(reverbValue);
     }
     if (switches[2] == 1) {
-      sinOscL.freq(pitchFreq);
+      sinOscL.freq(pitchFreq / 2);
       sinOscL.amp(ampValue);
       reverbSinL.room(reverbValue);
       reverbSinL.damp(reverbValue);

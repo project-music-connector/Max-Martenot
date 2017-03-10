@@ -2,7 +2,7 @@ public class Equalizer {
   private float minFreq;
   
   public Equalizer() {
-    this.minFreq = 90;
+    this.minFreq = 130;
   }
   
   public Equalizer(float minFreq) {
@@ -10,6 +10,6 @@ public class Equalizer {
   }
   
   public float getAmplitude(float amplitude, float frequency) {
-    return amplitude * (pow(minFreq, 2) / pow(frequency, 2));
+    return amplitude * (pow(minFreq, 1.5) / pow(frequency, 1.5));
   }
 }

@@ -169,6 +169,7 @@ void loop() {
   Serial.print(",");
   Serial.print(digitalRead(switch5), DEC);
   Serial.print(",");
-  Serial.println(digitalRead(switch6), DEC);
+  Serial.print(digitalRead(switch6), DEC);
+  Serial.println(",");
   delay(50);
 }
