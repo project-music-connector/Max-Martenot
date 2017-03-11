@@ -1,6 +1,6 @@
-//Max Martenot
-//Alice Barbe, Beatriz Fusaro, Samuel Yeomans
-//November 2016
+// Max Martenot
+// Alice Barbe, Beatriz Fusaro, Samuel Yeomans
+// March 2017
 
 // set I/O pins
 const int switch1 = 8;
@@ -17,21 +17,25 @@ const int led4 = 5;
 const int led5 = 6;
 const int led6 = 7;
 
-const int button1 = 0;
-const int button2 = 1;
+const int button1 = A5;
+const int button2 = A4;
 
-const int pitchPot = A0;
+const int pitchPot = A2;
 const int reverbPot = A1;
-const int pinPhoto = A2;
+const int pinPhoto = A0;
 
 // set photoresistor range variables
-float maxrange = 0;
-float minrange = 1023;
-float photoReading;
-int photoValue;
+float maxrange = 0;     // minimum photoresistor value (complete light)
+float minrange = 1023;  // maximum photoresistor value (complete dark)
+float photoReading;     // photosensor reading
+int photoValue;         // adjusted photosensor value
+boolean count = true;   // button count
 
-// set potentiometer variables
-int pitchValue; // running average of pitchPot
+// set pitch range variables
+boolean count2 = true;  // button count
+int zeropitch = 0;      // minimum potentiometer value in range
+int maxpitch = 1023;    // maximum potentiometer value in range
+int pitchValue;         // running average of pitchPot
 
 // define a list of 10 sensor values initialized to 0
 int pitchValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -55,22 +59,29 @@ void setup() {
 }
 
 void loop() {
-  //calibrate photoresistor
+  // calibrate photoresistor: set minimum and maximum photoresistor values
   if (digitalRead(button1) == LOW) {
-    minrange = analogRead(pinPhoto);
+    if (count) {
+      minrange = analogRead(pinPhoto);
+      count = false;
+    } else {
+      maxrange = analogRead(pinPhoto);
+      count = true;
+    }
+    delay(1000);
   }
-  if (digitalRead(button2) == LOW) {
-    maxrange = analogRead(pinPhoto);
-  }
+
   photoReading = analogRead(pinPhoto);
+
+  // minimize/maximize photoReading in case the photosensor acts strangely
   if (photoReading >= maxrange) {
     photoReading = int(maxrange);
   }
   if (photoReading <= minrange) {
     photoReading = int(minrange);
   }
-  //calculate photoresistor value
-  //photoValue = round((photoReading - minrange) / (maxrange - minrange) * 100);
+  
+  //calculate adjusted photoresistor value
   photoValue = round(map(photoReading, minrange, maxrange, 0, 1023));
   
   // drive LEDs using switch values
@@ -128,6 +139,29 @@ void loop() {
     pitchValue += pitchValues[i];
   }
   pitchValue = pitchValue / 10;
+
+  // calibrate pitch pot: set minimum and maximum pitch pot values
+  if (digitalRead(button2) == LOW) {
+    if (count2) {
+      zeropitch = pitchValue;
+      count2 = false;
+    } else {
+      maxpitch = pitchValue;
+      count2 = true;
+    }
+    delay(1000);
+  }
+
+  // minimize/maximize pitch pot values in case it acts strangely
+  if (pitchValue >= maxpitch) {
+    pitchValue = int(maxpitch);
+  }
+  if (pitchValue <= zeropitch) {
+    pitchValue = int(zeropitch);
+  }
+
+  // calculate adjusted pitch potentiometer value
+  pitchValue = round(map(pitchValue, zeropitch, maxpitch, 0, 1023));
   
   // print inputs to console
   Serial.print(pitchValue, DEC);
