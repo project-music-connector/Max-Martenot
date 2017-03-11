@@ -2,6 +2,25 @@
 // Alice Barbe, Beatriz Fusaro, Samuel Yeomans
 // March 2017
 
+/*-------------Program Description--------------
+Hardware inputs:
+  - 6 switches, Digital I/O pins
+  - 2 buttons, Analog pins (read digitally)
+  - 2 potentiometers, Analog pins
+  - 1 photoresistor, Analog pin
+Hardware outputs:
+  - 6 LEDS, Digital I/O pins 2-7
+Serial output:
+  - pitchValue: running average of the previous 10 values,
+                adjusted between a maximum and minimum (set
+                using button). pitchValue ranges from 0 - 1023.
+  - analogRead(reverbPot): raw value of reverbPot, ranges from 0 - 1023.
+  - photoValue: photosensor value adjusted between a maximum and
+                minimum (set using button). 
+                photoValue ranges from 0 - 1023.
+  - digitalRead(switches 1 - 6): raw value of switches. Values are 0 or 1.
+*/
+
 // set I/O pins
 const int switch1 = 8;
 const int switch2 = 9;
