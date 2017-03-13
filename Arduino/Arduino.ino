@@ -58,6 +58,7 @@ int pitchValue;         // running average of pitchPot
 
 // define a list of 10 sensor values initialized to 0
 int pitchValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int i = 0;
 
 void setup() {
   pinMode(switch1, INPUT_PULLUP);
@@ -146,12 +147,13 @@ void loop() {
   }
 
   // calculate running average of pitchPot
-  // shift pitchValues 0-8 to the left
-  for (int i = 0; i < 9; i++) {
-    pitchValues[i] = pitchValues[i+1];
+  pitchValues[i] = analogRead(pitchPot);
+
+  i++;
+  if (i == 10) {
+    i = 0;
   }
-  // read the input on analog pin 0 and place at index 9 in pitchValues
-  pitchValues[9] = analogRead(pitchPot);
+  
   // take the average of pitchValues
   int pitchValue = 0;
   for (int i = 0; i < 10; i++) {

@@ -112,7 +112,7 @@ void draw() {
     
     // calculate frequency (MIDI: linear; frequency: logarithmic)
     pitchMIDI = pitchPot / 1023.0  * 128;            // scale input to MIDI notes range
-    pitchMIDI = map(pitchFreq, 0, 128, 48, 84);      // map to a set range (C3 - C6)
+    pitchFreq = map(pitchMIDI, 0, 128, 48, 84);      // map to a set range (C3 - C6)
     pitchFreq = pow(2, (pitchFreq - 69) / 12) * 440; // convert to frequency
     
     // convert reverb pot input into 0 to 1 value
