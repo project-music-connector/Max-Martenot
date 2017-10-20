@@ -11,9 +11,9 @@ Hardware inputs:
 Hardware outputs:
   - 6 LEDS, Digital I/O pins 2-7
 Serial output:
-  - pitchValue: running average of the previous 10 values,
+  - encoderPosCount: running average of the previous 10 values,
                 adjusted between a maximum and minimum (set
-                using button). pitchValue ranges from 0 - 1023.
+                using button). encoderPosCount ranges from 0 - 1023.
   - analogRead(reverbPot): raw value of reverbPot, ranges from 0 - 1023.
   - photoValue: photosensor value adjusted between a maximum and
                 minimum (set using button). 
@@ -43,6 +43,13 @@ const int pitchPot = A2;
 const int reverbPot = A1;
 const int pinPhoto = A0;
 
+int pinA = A0;  // Connected to CLK on KY-040
+int pinB = A1;  // Connected to DT on KY-040
+int encoderPosCount = 0; 
+int pinALast;  
+int aVal;
+boolean bCW;
+
 // set photoresistor range variables
 float maxrange = 0;     // minimum photoresistor value (complete light)
 float minrange = 1023;  // maximum photoresistor value (complete dark)
@@ -54,10 +61,10 @@ boolean count = true;   // button count
 boolean count2 = true;  // button count
 int zeropitch = 0;      // minimum potentiometer value in range
 int maxpitch = 1023;    // maximum potentiometer value in range
-int pitchValue;         // running average of pitchPot
+int encoderPosCount;         // running average of pitchPot
 
 // define a list of 10 sensor values initialized to 0
-int pitchValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int encoderPosCounts[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int i = 0;
 
 void setup() {
@@ -75,6 +82,12 @@ void setup() {
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
   pinMode(led6, OUTPUT);
+  pinMode (pinA,INPUT);
+  pinMode (pinB,INPUT);
+  /* Read Pin A
+  Whatever state it's in will reflect the last position   
+  */
+  pinALast = digitalRead(pinA);   
   Serial.begin(9600);
 }
 
@@ -147,45 +160,58 @@ void loop() {
   }
 
   // calculate running average of pitchPot
-  pitchValues[i] = analogRead(pitchPot);
+  aVal = digitalRead(pinA);
+   if (aVal != pinALast){ // Means the knob is rotating
+     // if the knob is rotating, we need to determine direction
+     // We do that by reading pin B.
+     if (digitalRead(pinB) != aVal) {  // Means pin A Changed first - We're Rotating Clockwise
+       encoderPosCount ++;
+       bCW = true;
+     } else {// Otherwise B changed first and we're moving CCW
+       bCW = false;
+       encoderPosCount--;
+     }
+   } 
+   pinALast = aVal;
+//  encoderPosCounts[i] = analogRead(pitchPot);
 
-  i++;
-  if (i == 10) {
-    i = 0;
-  }
+//  i++;
+//  if (i == 10) {
+//    i = 0;
+//  }
   
-  // take the average of pitchValues
-  int pitchValue = 0;
-  for (int i = 0; i < 10; i++) {
-    pitchValue += pitchValues[i];
-  }
-  pitchValue = pitchValue / 10;
+  // take the average of encoderPosCounts
+//  int encoderPosCount = 0;
+//  for (int i = 0; i < 10; i++) {
+//    encoderPosCount += encoderPosCounts[i];
+//  }
+//  encoderPosCount = encoderPosCount / 10;
 
   // calibrate pitch pot: set minimum and maximum pitch pot values
   if (digitalRead(button2) == LOW) {
     if (count2) {
-      zeropitch = pitchValue;
+      encoderPosCount = 0;
       count2 = false;
     } else {
-      maxpitch = pitchValue;
+      maxpitch = encoderPosCount;
       count2 = true;
     }
     delay(1000);
   }
 
   // minimize/maximize pitch pot values in case it acts strangely
-  if (pitchValue >= maxpitch) {
-    pitchValue = int(maxpitch);
+  if (encoderPosCount >= maxpitch) {
+    encoderPosCount = int(maxpitch);
   }
-  if (pitchValue <= zeropitch) {
-    pitchValue = int(zeropitch);
+  if (encoderPosCount <= 0) {
+    encoderPosCount = 0;
   }
 
   // calculate adjusted pitch potentiometer value
-  pitchValue = round(map(pitchValue, zeropitch, maxpitch, 0, 1023));
+  encoderPosCount = round(map(encoderPosCount, 0, maxpitch, 0, 1023));
   
   // print inputs to console
-  Serial.print(pitchValue, DEC);
+  Serial.print(encoderPosCount, DEC);
   Serial.print(",");
   Serial.print(analogRead(reverbPot), DEC);
   Serial.print(",");
