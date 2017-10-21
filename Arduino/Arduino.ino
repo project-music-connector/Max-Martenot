@@ -36,8 +36,8 @@ const int led4 = 5;
 const int led5 = 6;
 const int led6 = 7;
 
-const int button1 = A5;
-const int button2 = A4;
+const int button1 = A4;
+const int button2 = A3;
 
 const int pitchPot = A2;
 const int reverbPot = A1;
